@@ -1,11 +1,13 @@
-name: Run dbt models
+name: dbt CI/CD
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  run_dbt:
+  dbt-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,17 +21,27 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install dbt-snowflake
+          python -m pip install --upgrade pip
+          pip install dbt-core dbt-snowflake python-dotenv
 
-      - name: Setup dbt profile
-        run: |
-          mkdir -p ~/.dbt
-          echo "$DBT_PROFILE" > ~/.dbt/profiles.yml
-
-      - name: Run dbt models
-        run: |
-          cd dbt_project
-          dbt deps
-          dbt run
+      - name: Run dbt debug
+        run: dbt debug
         env:
-          DBT_PROFILE: ${{ secrets.DBT_PROFILE }}
+          DBT_USER: ${{ secrets.DBT_USER }}
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+          DBT_ACCOUNT: ${{ secrets.DBT_ACCOUNT }}
+          DBT_ROLE: ${{ secrets.DBT_ROLE }}
+          DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
+          DBT_SCHEMA: ${{ secrets.DBT_SCHEMA }}
+          DBT_WAREHOUSE: ${{ secrets.DBT_WAREHOUSE }}
+
+      - name: Run dbt build
+        run: dbt build --full-refresh
+        env:
+          DBT_USER: ${{ secrets.DBT_USER }}
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+          DBT_ACCOUNT: ${{ secrets.DBT_ACCOUNT }}
+          DBT_ROLE: ${{ secrets.DBT_ROLE }}
+          DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
+          DBT_SCHEMA: ${{ secrets.DBT_SCHEMA }}
+          DBT_WAREHOUSE: ${{ secrets.DBT_WAREHOUSE }}
