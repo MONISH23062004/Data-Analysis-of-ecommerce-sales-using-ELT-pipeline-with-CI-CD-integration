@@ -24,24 +24,27 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt-core dbt-snowflake python-dotenv
 
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          echo "ecommerce_dbt:" > ~/.dbt/profiles.yml
+          echo "  target: dev" >> ~/.dbt/profiles.yml
+          echo "  outputs:" >> ~/.dbt/profiles.yml
+          echo "    dev:" >> ~/.dbt/profiles.yml
+          echo "      type: snowflake" >> ~/.dbt/profiles.yml
+          echo "      account: ${{ secrets.DBT_ACCOUNT }}" >> ~/.dbt/profiles.yml
+          echo "      user: ${{ secrets.DBT_USER }}" >> ~/.dbt/profiles.yml
+          echo "      password: ${{ secrets.DBT_PASSWORD }}" >> ~/.dbt/profiles.yml
+          echo "      role: ${{ secrets.DBT_ROLE }}" >> ~/.dbt/profiles.yml
+          echo "      database: ${{ secrets.DBT_DATABASE }}" >> ~/.dbt/profiles.yml
+          echo "      warehouse: ${{ secrets.DBT_WAREHOUSE }}" >> ~/.dbt/profiles.yml
+          echo "      schema: ${{ secrets.DBT_SCHEMA }}" >> ~/.dbt/profiles.yml
+          echo "      threads: 1" >> ~/.dbt/profiles.yml
+
       - name: Run dbt debug
         run: dbt debug
-        env:
-          DBT_USER: ${{ secrets.DBT_USER }}
-          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
-          DBT_ACCOUNT: ${{ secrets.DBT_ACCOUNT }}
-          DBT_ROLE: ${{ secrets.DBT_ROLE }}
-          DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
-          DBT_SCHEMA: ${{ secrets.DBT_SCHEMA }}
-          DBT_WAREHOUSE: ${{ secrets.DBT_WAREHOUSE }}
+        working-directory: dbt_project/ecommerce_dbt
 
       - name: Run dbt build
         run: dbt build --full-refresh
-        env:
-          DBT_USER: ${{ secrets.DBT_USER }}
-          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
-          DBT_ACCOUNT: ${{ secrets.DBT_ACCOUNT }}
-          DBT_ROLE: ${{ secrets.DBT_ROLE }}
-          DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
-          DBT_SCHEMA: ${{ secrets.DBT_SCHEMA }}
-          DBT_WAREHOUSE: ${{ secrets.DBT_WAREHOUSE }}
+        working-directory: dbt_project/ecommerce_dbt
