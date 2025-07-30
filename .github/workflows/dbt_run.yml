@@ -1,0 +1,35 @@
+name: Run dbt models
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  run_dbt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install dbt-snowflake
+
+      - name: Setup dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "$DBT_PROFILE" > ~/.dbt/profiles.yml
+
+      - name: Run dbt models
+        run: |
+          cd dbt_project
+          dbt deps
+          dbt run
+        env:
+          DBT_PROFILE: ${{ secrets.DBT_PROFILE }}
