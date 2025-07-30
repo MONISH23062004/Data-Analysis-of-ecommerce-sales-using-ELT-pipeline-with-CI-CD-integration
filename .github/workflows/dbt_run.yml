@@ -11,20 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ✅ Step 1: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: ✅ Step 2: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      - name: ✅ Step 3: Install dbt and dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install dbt-core dbt-snowflake python-dotenv
 
-      - name: ✅ Step 4: Create Snowflake dbt profile
+      - name: Create profiles.yml
         run: |
           mkdir -p ~/.dbt
           echo "ecommerce_dbt:" > ~/.dbt/profiles.yml
@@ -41,10 +41,10 @@ jobs:
           echo "      schema: ${{ secrets.DBT_SCHEMA }}" >> ~/.dbt/profiles.yml
           echo "      threads: 1" >> ~/.dbt/profiles.yml
 
-      - name: 🚀 Step 5: Verify DBT Snowflake connection (dbt debug)
+      - name: Run dbt debug
         run: dbt debug
         working-directory: dbt_project/ecommerce_dbt
 
-      - name: 🎯 Step 6: Deploy models using dbt build
+      - name: Run dbt build
         run: dbt build --full-refresh
         working-directory: dbt_project/ecommerce_dbt
