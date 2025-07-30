@@ -1,0 +1,44 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environments
+env/
+venv/
+.venv/
+
+# Ignore environment files
+.env
+
+# Ignore DBT build artifacts
+dbt_packages/
+target/
+logs/
+
+# VS Code settings
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints (if used)
+.ipynb_checkpoints/
+
+# Node modules (if frontend/CI tools used)
+node_modules/
+
+# Git folder in submodules (just in case)
+**/.git
+
+# Output and temporary data
+*.log
+*.bak
+*.tmp
+
+# OS generated files
+ehthumbs.db
+Icon?
+desktop.ini
